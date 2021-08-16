@@ -10,10 +10,10 @@
     "author": "",
     "license": "ISC",
     "devDependencies": {
-        "@types/node": "^16.6.1",
         "ts-node": "^10.2.0"
     },
     "dependencies": {
+        "@types/node": "^16.6.1",
         "snoowrap": "^1.23.0",
         "typescript": "^4.3.5"
     }
