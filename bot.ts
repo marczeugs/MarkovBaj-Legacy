@@ -3,8 +3,8 @@ import { MarkovChain } from './MarkovChain';
 import Snoowrap from 'snoowrap';
 
 const checkInterval = 2 * 60;
-const postReplyProbability = 0.05;
-const commentReplyProbability = 0.3;
+const postReplyProbability = 0.3;
+const commentReplyProbability = 0.05;
 const maxCommentsPerInterval = 5;
 
 (async () => {
@@ -31,6 +31,10 @@ const maxCommentsPerInterval = 5;
 		let commentCounter = 0;
 
 		for (const post of newPosts) {
+			if (post.removal_reason !== null) {
+				continue;
+			}
+
 			if (Math.random() < postReplyProbability) {
 				const shuffledTitle = shuffleArray(post.title.split(/\s+/));
 
@@ -40,9 +44,9 @@ const maxCommentsPerInterval = 5;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
 							const reply = markovChain.generate(firstWord).join(' ');
-							//post.reply(reply);
-							console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
-							//console.log(`Replied to post "${post.title}" with "${reply}".`);
+							post.reply(reply);
+							//console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
+							console.log(`Replied to post "${post.title}" with "${reply}".`);
 							commentCounter++;
 
 							break tryToReply;
@@ -52,9 +56,9 @@ const maxCommentsPerInterval = 5;
 					console.error(`Unable to generate a response for post "${post.title}", sending default...`);
 
 					const reply = markovChain.generate().join(' ');
-					//post.reply(reply);
-					console.log(`[DRY RUN] Would default reply to post "${post.title}" with "${reply}".`);
-					//console.log(`Default replied to post "${post.title}" with "${reply}".`);
+					post.reply(reply);
+					//console.log(`[DRY RUN] Would default reply to post "${post.title}" with "${reply}".`);
+					console.log(`Default replied to post "${post.title}" with "${reply}".`);
 					commentCounter++;
 				}
 			}
@@ -78,9 +82,9 @@ const maxCommentsPerInterval = 5;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
 							const reply = markovChain.generate(firstWord).join(' ');
-							//post.reply(reply);
-							console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
-							//console.log(`Replied to comment "${comment.body}" with "${reply}".`);
+							comment.reply(reply);
+							//console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
+							console.log(`Replied to comment "${comment.body}" with "${reply}".`);
 							commentCounter++;
 
 							break tryToReply;
@@ -90,9 +94,9 @@ const maxCommentsPerInterval = 5;
 					console.error(`Unable to generate a response for comment "${comment.body}", sending default...`);
 
 					const reply = markovChain.generate().join(' ');
-					//post.reply(reply);
-					console.log(`[DRY RUN] Would default reply to comment "${comment.body}" with "${reply}".`);
-					//console.log(`Default replied to comment "${comment.body}" with "${reply}".`);
+					comment.reply(reply);
+					//console.log(`[DRY RUN] Would default reply to comment "${comment.body}" with "${reply}".`);
+					console.log(`Default replied to comment "${comment.body}" with "${reply}".`);
 					commentCounter++;
 				}
 			}
