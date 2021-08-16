@@ -4,7 +4,7 @@
     "description": "",
     "scripts": {
         "start": "ts-node bot.ts",
-        "getComments": "ts-node getComments.ts"
+        "getComments": "npx ts-node getComments.ts"
     },
     "keywords": [],
     "author": "",
