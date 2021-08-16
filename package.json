@@ -3,7 +3,7 @@
     "version": "1.0.0",
     "description": "",
     "scripts": {
-        "start": "ts-node bot.ts",
+        "start": "npx ts-node bot.ts",
         "getComments": "npx ts-node getComments.ts"
     },
     "keywords": [],

@@ -49,6 +49,10 @@ const commentReplyProbability = 1;
 		}
 
 		for (const comment of newComments) {
+			if (comment.author.name.toLowerCase() === bot.username.toLowerCase()) {
+				continue;
+			}
+
 			if (Math.random() < commentReplyProbability || comment.body.toLowerCase().includes('markov')) {
 				const shuffledBody = shuffleArray(comment.body.split(/\s+/));
 
