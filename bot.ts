@@ -3,8 +3,9 @@ import { MarkovChain } from './MarkovChain';
 import Snoowrap from 'snoowrap';
 
 const checkInterval = 2 * 60;
-const postReplyProbability = 1;
-const commentReplyProbability = 1;
+const postReplyProbability = 0.05;
+const commentReplyProbability = 0.3;
+const maxCommentsPerInterval = 5;
 
 (async () => {
 	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
@@ -27,6 +28,8 @@ const commentReplyProbability = 1;
 		const newComments = (await bot.getNewComments('forsen', { limit: 200 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkInterval);
 		console.log(`${newPosts.length} new post(s), ${newComments.length} new comment(s).`);
 
+		let commentCounter = 0;
+
 		for (const post of newPosts) {
 			if (Math.random() < postReplyProbability) {
 				const shuffledTitle = shuffleArray(post.title.split(/\s+/));
@@ -36,15 +39,28 @@ const commentReplyProbability = 1;
 						const firstWord = shuffledTitle.pop()!;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
-							console.log(`[DRY RUN] Would reply to comment "${post.title}" with "${markovChain.generate(firstWord).join(' ')}".`);
+							const reply = markovChain.generate(firstWord).join(' ');
+							//post.reply(reply);
+							console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
+							//console.log(`Replied to post "${post.title}" with "${reply}".`);
+							commentCounter++;
+
 							break tryToReply;
 						}
 					}
 
-					console.error(`Unable to generate a response for comment "${post.title}", sending default...`);
+					console.error(`Unable to generate a response for post "${post.title}", sending default...`);
 
-					console.log(`[DRY RUN] Would default reply to comment "${post.title}" with "${markovChain.generate().join(' ')}".`);
+					const reply = markovChain.generate().join(' ');
+					//post.reply(reply);
+					console.log(`[DRY RUN] Would default reply to post "${post.title}" with "${reply}".`);
+					//console.log(`Default replied to post "${post.title}" with "${reply}".`);
+					commentCounter++;
 				}
+			}
+
+			if (commentCounter >= maxCommentsPerInterval) {
+				break;
 			}
 		}
 
@@ -61,15 +77,28 @@ const commentReplyProbability = 1;
 						const firstWord = shuffledBody.pop()!;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
-							console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${markovChain.generate(firstWord).join(' ')}".`);
+							const reply = markovChain.generate(firstWord).join(' ');
+							//post.reply(reply);
+							console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
+							//console.log(`Replied to comment "${comment.body}" with "${reply}".`);
+							commentCounter++;
+
 							break tryToReply;
 						}
 					}
 
 					console.error(`Unable to generate a response for comment "${comment.body}", sending default...`);
 
-					console.log(`[DRY RUN] Would default reply to comment "${comment.body}" with "${markovChain.generate().join(' ')}".`);
+					const reply = markovChain.generate().join(' ');
+					//post.reply(reply);
+					console.log(`[DRY RUN] Would default reply to comment "${comment.body}" with "${reply}".`);
+					//console.log(`Default replied to comment "${comment.body}" with "${reply}".`);
+					commentCounter++;
 				}
+			}
+
+			if (commentCounter >= maxCommentsPerInterval) {
+				break;
 			}
 		}
 	}, checkInterval * 1000);
