@@ -23,5 +23,5 @@ import Snoowrap from 'snoowrap';
 	}*/
 	console.log(comments.length);
 
-	//fs.writeFileSync('data.txt', JSON.stringify(mappedComments));
+	fs.writeFileSync('data.txt', JSON.stringify(mappedComments));
 })();
