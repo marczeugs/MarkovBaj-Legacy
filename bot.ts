@@ -3,8 +3,8 @@ import { MarkovChain } from './MarkovChain';
 import Snoowrap from 'snoowrap';
 
 const checkInterval = 2 * 60;
-const postReplyProbability = 1;
-const commentReplyProbability = 0.5;
+const postReplyProbability = 0.3;
+const commentReplyProbability = 0.05;
 const maxCommentsPerInterval = 5;
 const delayBetweenComments = 15_000;
 
