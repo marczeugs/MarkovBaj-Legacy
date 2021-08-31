@@ -3,9 +3,10 @@ import { MarkovChain } from './MarkovChain';
 import Snoowrap from 'snoowrap';
 
 const checkInterval = 2 * 60;
-const postReplyProbability = 0.3;
-const commentReplyProbability = 0.05;
+const postReplyProbability = 1;
+const commentReplyProbability = 0.5;
 const maxCommentsPerInterval = 5;
+const delayBetweenComments = 15_000;
 
 (async () => {
 	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
@@ -44,12 +45,12 @@ const maxCommentsPerInterval = 5;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
 							const reply = markovChain.generate(firstWord).join(' ');
-							post.reply(reply);
+							//post.reply(reply);
 							//console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
 							console.log(`Replied to post "${post.title}" with "${reply}".`);
 							commentCounter++;
 
-							await new Promise(resolve => global.setTimeout(resolve, 15_000));
+							await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
 
 							break tryToReply;
 						}
@@ -58,10 +59,12 @@ const maxCommentsPerInterval = 5;
 					console.error(`Unable to generate a response for post "${post.title}", sending default...`);
 
 					const reply = markovChain.generate().join(' ');
-					post.reply(reply);
+					//post.reply(reply);
 					//console.log(`[DRY RUN] Would default reply to post "${post.title}" with "${reply}".`);
 					console.log(`Default replied to post "${post.title}" with "${reply}".`);
 					commentCounter++;
+
+					await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
 				}
 			}
 
@@ -84,12 +87,12 @@ const maxCommentsPerInterval = 5;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
 							const reply = markovChain.generate(firstWord).join(' ');
-							comment.reply(reply);
+							//comment.reply(reply);
 							//console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
 							console.log(`Replied to comment "${comment.body}" with "${reply}".`);
 							commentCounter++;
 
-							await new Promise(resolve => global.setTimeout(resolve, 15_000));
+							await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
 
 							break tryToReply;
 						}
@@ -98,10 +101,12 @@ const maxCommentsPerInterval = 5;
 					console.error(`Unable to generate a response for comment "${comment.body}", sending default...`);
 
 					const reply = markovChain.generate().join(' ');
-					comment.reply(reply);
+					//comment.reply(reply);
 					//console.log(`[DRY RUN] Would default reply to comment "${comment.body}" with "${reply}".`);
 					console.log(`Default replied to comment "${comment.body}" with "${reply}".`);
 					commentCounter++;
+
+					await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
 				}
 			}
 
