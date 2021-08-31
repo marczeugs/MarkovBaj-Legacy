@@ -24,8 +24,8 @@ const maxCommentsPerInterval = 5;
 	const forsenSubreddit: Snoowrap.Subreddit = await (bot.getSubreddit('forsen') as any);
 
 	global.setInterval(async () => {
-		const newPosts = (await forsenSubreddit.getNew({ limit: 20 })).filter(post => (Date.now() / 1000) - post.created_utc < checkInterval);
-		const newComments = (await bot.getNewComments('forsen', { limit: 200 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkInterval);
+		const newPosts = (await forsenSubreddit.getNew({ limit: 10 })).filter(post => (Date.now() / 1000) - post.created_utc < checkInterval);
+		const newComments = (await bot.getNewComments('forsen', { limit: 100 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkInterval);
 		console.log(`${newPosts.length} new post(s), ${newComments.length} new comment(s).`);
 
 		let commentCounter = 0;
