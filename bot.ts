@@ -45,7 +45,7 @@ const delayBetweenComments = 15_000;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
 							const reply = markovChain.generate(firstWord).join(' ');
-							//post.reply(reply);
+							post.reply(reply);
 							//console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
 							console.log(`Replied to post "${post.title}" with "${reply}".`);
 							commentCounter++;
@@ -59,7 +59,7 @@ const delayBetweenComments = 15_000;
 					console.error(`Unable to generate a response for post "${post.title}", sending default...`);
 
 					const reply = markovChain.generate().join(' ');
-					//post.reply(reply);
+					post.reply(reply);
 					//console.log(`[DRY RUN] Would default reply to post "${post.title}" with "${reply}".`);
 					console.log(`Default replied to post "${post.title}" with "${reply}".`);
 					commentCounter++;
@@ -87,7 +87,7 @@ const delayBetweenComments = 15_000;
 
 						if (markovChain.chainStarts.weightMap.has(firstWord)) {
 							const reply = markovChain.generate(firstWord).join(' ');
-							//comment.reply(reply);
+							comment.reply(reply);
 							//console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
 							console.log(`Replied to comment "${comment.body}" with "${reply}".`);
 							commentCounter++;
@@ -101,7 +101,7 @@ const delayBetweenComments = 15_000;
 					console.error(`Unable to generate a response for comment "${comment.body}", sending default...`);
 
 					const reply = markovChain.generate().join(' ');
-					//comment.reply(reply);
+					comment.reply(reply);
 					//console.log(`[DRY RUN] Would default reply to comment "${comment.body}" with "${reply}".`);
 					console.log(`Default replied to comment "${comment.body}" with "${reply}".`);
 					commentCounter++;
