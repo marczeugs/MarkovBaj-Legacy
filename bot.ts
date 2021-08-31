@@ -49,7 +49,7 @@ const maxCommentsPerInterval = 5;
 							console.log(`Replied to post "${post.title}" with "${reply}".`);
 							commentCounter++;
 
-							await new Promise(resolve => global.setTimeout(resolve, 5000));
+							await new Promise(resolve => global.setTimeout(resolve, 15_000));
 
 							break tryToReply;
 						}
@@ -89,7 +89,7 @@ const maxCommentsPerInterval = 5;
 							console.log(`Replied to comment "${comment.body}" with "${reply}".`);
 							commentCounter++;
 
-							await new Promise(resolve => global.setTimeout(resolve, 5000));
+							await new Promise(resolve => global.setTimeout(resolve, 15_000));
 
 							break tryToReply;
 						}
