@@ -16,15 +16,19 @@ type ResponseFormat = {
 	let allComments: string[] = [];
 
 	while (true) {
-		const nextComments = (await fetch(urlTemplate + lastTimestamp).then((response: any) => response.json()) as ResponseFormat).data
-			.filter(comment => !['markovbaj', '[deleted]'].includes(comment.author.toLowerCase()));
+		try {
+			const nextComments = (await fetch(urlTemplate + lastTimestamp).then((response: any) => response.json()) as ResponseFormat).data
+				.filter(comment => !['markovbaj', '[deleted]'].includes(comment.author.toLowerCase()));
 
-		allComments = [...allComments, ...nextComments.map(comment => comment.body.replace(/\[(.*)\]\(.*\)/g, (_, text) => text).replace(/["()*]/g, '').trim())];
+			allComments = [...allComments, ...nextComments.map(comment => comment.body.replace(/\[(.*)\]\(.*\)/g, (_, text) => text).replace(/["()*]/g, '').trim())];
+	
+			console.log(`Fetched ${nextComments.length} comments before ${new Date(lastTimestamp * 1000)}, total comments: ${allComments.length}`);
+			fs.writeFileSync('data.txt', JSON.stringify(allComments));
 
-		console.log(`Fetched ${nextComments.length} comments before ${new Date(lastTimestamp * 1000)}, total comments: ${allComments.length}`);
-		fs.writeFileSync('data.txt', JSON.stringify(allComments));
-
-		lastTimestamp = nextComments.pop()!.created_utc;
+			lastTimestamp = nextComments.pop()!.created_utc;
+		} catch (_) {
+			console.log(`Unable to fetch comments before ${new Date(lastTimestamp * 1000)}, retrying...`);
+		}
 
 		await new Promise(resolve => global.setTimeout(resolve, 15000));
 	}

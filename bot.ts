@@ -10,9 +10,14 @@ const delayBetweenComments = 15_000;
 
 (async () => {
 	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
+
+	const startTime = Date.now();
+	console.log('Building Markov chain...');
 	
 	const markovChain = new MarkovChain();
 	markovChain.addData(comments.map(comment => comment.split(/\s+/)));
+
+	console.log(`Building the chain took ${(Date.now() - startTime) / 1000}s.`);
 	
 	const bot = new Snoowrap({
 		userAgent: 'NodeJS/Snoowrap',
