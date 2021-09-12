@@ -45,23 +45,25 @@ const delayBetweenComments = 15_000;
 				const shuffledTitle = shuffleArray(post.title.split(/\s+/));
 
 				tryToReply: {
-					while (shuffledTitle.length > 0) {
-						const firstWord = shuffledTitle.pop()!;
-
-						if (markovChain.chainStarts.weightMap.has(firstWord)) {
-							const reply = markovChain.generate(firstWord).join(' ');
-							post.reply(reply);
-							//console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
-							console.log(`Replied to post "${post.title}" with "${reply}".`);
-							commentCounter++;
-
-							await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
-
-							break tryToReply;
+					if (Math.random() < 0.67) {
+						while (shuffledTitle.length > 0) {
+							const firstWord = shuffledTitle.pop()!;
+	
+							if (markovChain.chainStarts.weightMap.has(firstWord)) {
+								const reply = markovChain.generate(firstWord).join(' ');
+								post.reply(reply);
+								//console.log(`[DRY RUN] Would reply to post "${post.title}" with "${reply}".`);
+								console.log(`Replied to post "${post.title}" with actual "${reply}".`);
+								commentCounter++;
+	
+								await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
+	
+								break tryToReply;
+							}
 						}
-					}
 
-					console.error(`Unable to generate a response for post "${post.title}", sending default...`);
+						console.error(`Unable to generate a response for post "${post.title}", sending default...`);
+					}
 
 					const reply = markovChain.generate().join(' ');
 					post.reply(reply);
@@ -87,23 +89,25 @@ const delayBetweenComments = 15_000;
 				const shuffledBody = shuffleArray(comment.body.split(/\s+/));
 
 				tryToReply: {
-					while (shuffledBody.length > 0) {
-						const firstWord = shuffledBody.pop()!;
+					if (Math.random() < 0.67) {
+						while (shuffledBody.length > 0) {
+							const firstWord = shuffledBody.pop()!;
 
-						if (markovChain.chainStarts.weightMap.has(firstWord)) {
-							const reply = markovChain.generate(firstWord).join(' ');
-							comment.reply(reply);
-							//console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
-							console.log(`Replied to comment "${comment.body}" with "${reply}".`);
-							commentCounter++;
+							if (markovChain.chainStarts.weightMap.has(firstWord)) {
+								const reply = markovChain.generate(firstWord).join(' ');
+								comment.reply(reply);
+								//console.log(`[DRY RUN] Would reply to comment "${comment.body}" with "${reply}".`);
+								console.log(`Replied to comment "${comment.body}" with "${reply}".`);
+								commentCounter++;
 
-							await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
+								await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
 
-							break tryToReply;
+								break tryToReply;
+							}
 						}
-					}
 
-					console.error(`Unable to generate a response for comment "${comment.body}", sending default...`);
+						console.error(`Unable to generate a response for comment "${comment.body}", sending default...`);
+					}
 
 					const reply = markovChain.generate().join(' ');
 					comment.reply(reply);

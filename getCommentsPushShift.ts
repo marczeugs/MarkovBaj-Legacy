@@ -30,6 +30,6 @@ type ResponseFormat = {
 			console.log(`Unable to fetch comments before ${new Date(lastTimestamp * 1000)}, retrying...`);
 		}
 
-		await new Promise(resolve => global.setTimeout(resolve, 15000));
+		await new Promise(resolve => global.setTimeout(resolve, 5000));
 	}
 })();
