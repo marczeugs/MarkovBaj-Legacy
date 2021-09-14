@@ -42,7 +42,7 @@ const delayBetweenComments = 15_000;
 				continue;
 			}
 
-			if (Math.random() < postReplyProbability) {
+			if (Math.random() < postReplyProbability || post.title.toLowerCase().includes('markov')) {
 				const shuffledTitle = shuffleArray(
 					post.title.split(/\s+/).filter(word => !chainIgnoreTerms.some(term => word.toLowerCase().includes(term.toLowerCase())))
 				);
