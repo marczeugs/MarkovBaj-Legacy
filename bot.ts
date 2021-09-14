@@ -10,11 +10,12 @@ const delayBetweenComments = 15_000;
 
 (async () => {
 	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
+	const chainIgnoreTerms = ['markov'];
 
 	const startTime = Date.now();
 	console.log('Building Markov chain...');
 	
-	const markovChain = new MarkovChain();
+	const markovChain = new MarkovChain(chainIgnoreTerms);
 	markovChain.addData(comments.map(comment => comment.split(/\s+/)));
 
 	console.log(`Building the chain took ${(Date.now() - startTime) / 1000}s.`);
@@ -42,7 +43,9 @@ const delayBetweenComments = 15_000;
 			}
 
 			if (Math.random() < postReplyProbability) {
-				const shuffledTitle = shuffleArray(post.title.split(/\s+/));
+				const shuffledTitle = shuffleArray(
+					post.title.split(/\s+/).filter(word => !chainIgnoreTerms.some(term => word.toLowerCase().includes(term.toLowerCase())))
+				);
 
 				tryToReply: {
 					if (Math.random() < 0.67) {
@@ -86,7 +89,9 @@ const delayBetweenComments = 15_000;
 			}
 
 			if (Math.random() < commentReplyProbability || comment.body.toLowerCase().includes('markov')) {
-				const shuffledBody = shuffleArray(comment.body.split(/\s+/));
+				const shuffledBody = shuffleArray(
+					comment.body.split(/\s+/).filter(word => !chainIgnoreTerms.some(term => word.toLowerCase().includes(term.toLowerCase())))
+				);
 
 				tryToReply: {
 					if (Math.random() < 0.67) {

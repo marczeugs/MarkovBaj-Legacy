@@ -2,10 +2,18 @@ export class MarkovChain {
 	public chainStarts = new WeightedSet<string>();
 	public followingWords = new Map<string, WeightedSet<string | null>>();
 
-	public addData(data: string[][]) {
-		this.chainStarts.addData(data.map(sequence => sequence[0]!));
+	constructor(private excludeTerms: string[] = []) { }
 
-		for (const sequence of data) {
+	public addData(data: string[][]) {
+		const filteredData = data.map(sequence => 
+			sequence.filter(word => 
+				!this.excludeTerms.some(term => word.toLowerCase().includes(term.toLowerCase()))
+			)
+		)
+
+		this.chainStarts.addData(filteredData.map(sequence => sequence[0]!));
+
+		for (const sequence of filteredData) {
 			const sequenceParts = [...sequence, null];
 
 			let firstWord: string, followingWord: string;
