@@ -5,15 +5,19 @@ export class MarkovChain {
 	constructor(private excludeTerms: string[] = []) { }
 
 	public addData(data: string[][]) {
-		const filteredData = data.map(sequence => 
-			sequence.filter(word => 
+		inPlaceMap(
+			data, 
+			sequence => sequence.filter(word => 
 				!this.excludeTerms.some(term => word.toLowerCase().includes(term.toLowerCase()))
 			)
-		)
+		);
 
-		this.chainStarts.addData(filteredData.map(sequence => sequence[0]!));
+		for (let i = 0; i < data.length; i++) {
+			this.chainStarts.addValue(data[i]![0]!);
+		}
 
-		for (const sequence of filteredData) {
+		for (let i = 0; i < data.length; i++) {
+			const sequence = data[i]!;
 			const sequenceParts = [...sequence, null];
 
 			let firstWord: string, followingWord: string;
@@ -25,7 +29,7 @@ export class MarkovChain {
 					this.followingWords.set(firstWord, new WeightedSet());
 				}
 
-				this.followingWords.get(firstWord)!.addData([followingWord]);
+				this.followingWords.get(firstWord)!.addValue(followingWord);
 			}
 		}
 	}
@@ -51,19 +55,20 @@ export class MarkovChain {
 
 class WeightedSet<T> {
 	public weightMap = new Map<T, number>();
+	private weightSum: number = 0;
 
-	public addData(data: T[]) {
-		for (const value of data) {
-			if (this.weightMap.has(value)) {
-				this.weightMap.set(value, this.weightMap.get(value)! + 1);
-			} else {
-				this.weightMap.set(value, 1);
-			}
+	public addValue(value: T) {
+		if (this.weightMap.has(value)) {
+			this.weightMap.set(value, this.weightMap.get(value)! + 1);
+		} else {
+			this.weightMap.set(value, 1);
 		}
+
+		this.weightSum++;
 	}
 
 	public getRandomValue(): T {
-		let weightValue = Math.floor(Math.random() * this.weightMap.size);
+		let weightValue = Math.floor(Math.random() * this.weightSum);
 		let currentItem: T, weight: number;
 
 		for ([currentItem, weight] of this.weightMap.entries()) {
@@ -75,5 +80,11 @@ class WeightedSet<T> {
 		}
 
 		throw '';
+	}
+}
+
+function inPlaceMap<T>(array: T[], operation: (element: T) => T) {
+	for (let i = 0; i < array.length; i++) {
+		array[i] = operation(array[i]!);
 	}
 }
