@@ -2,11 +2,11 @@ import * as fs from 'fs';
 import { MarkovChain } from './MarkovChain';
 import Snoowrap from 'snoowrap';
 
-const checkInterval = 2 * 60;
+const checkSecondInterval = 2 * 60;
 const postReplyProbability = 0.3;
 const commentReplyProbability = 0.05;
 const maxCommentsPerInterval = 5;
-const delayBetweenComments = 15_000;
+const delayBetweenCommentsSeconds = 15;
 
 (async () => {
 	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
@@ -31,8 +31,8 @@ const delayBetweenComments = 15_000;
 	const forsenSubreddit: Snoowrap.Subreddit = await (bot.getSubreddit('forsen') as any);
 
 	global.setInterval(async () => {
-		const newPosts = (await forsenSubreddit.getNew({ limit: 10 })).filter(post => (Date.now() / 1000) - post.created_utc < checkInterval);
-		const newComments = (await bot.getNewComments('forsen', { limit: 100 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkInterval);
+		const newPosts = (await forsenSubreddit.getNew({ limit: 10 })).filter(post => (Date.now() / 1000) - post.created_utc < checkSecondInterval);
+		const newComments = (await bot.getNewComments('forsen', { limit: 100 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkSecondInterval);
 		console.log(`${newPosts.length} new post(s), ${newComments.length} new comment(s).`);
 
 		let commentCounter = 0;
@@ -59,7 +59,7 @@ const delayBetweenComments = 15_000;
 								console.log(`Replied to post "${post.title}" with actual "${reply}".`);
 								commentCounter++;
 	
-								await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
+								await new Promise(resolve => global.setTimeout(resolve, delayBetweenCommentsSeconds));
 	
 								break tryToReply;
 							}
@@ -74,7 +74,7 @@ const delayBetweenComments = 15_000;
 					console.log(`Default replied to post "${post.title}" with "${reply}".`);
 					commentCounter++;
 
-					await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
+					await new Promise(resolve => global.setTimeout(resolve, delayBetweenCommentsSeconds));
 				}
 			}
 
@@ -105,7 +105,7 @@ const delayBetweenComments = 15_000;
 								console.log(`Replied to comment "${comment.body}" with "${reply}".`);
 								commentCounter++;
 
-								await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
+								await new Promise(resolve => global.setTimeout(resolve, delayBetweenCommentsSeconds));
 
 								break tryToReply;
 							}
@@ -120,7 +120,7 @@ const delayBetweenComments = 15_000;
 					console.log(`Default replied to comment "${comment.body}" with "${reply}".`);
 					commentCounter++;
 
-					await new Promise(resolve => global.setTimeout(resolve, delayBetweenComments));
+					await new Promise(resolve => global.setTimeout(resolve, delayBetweenCommentsSeconds));
 				}
 			}
 
@@ -128,7 +128,7 @@ const delayBetweenComments = 15_000;
 				break;
 			}
 		}
-	}, checkInterval * 1000);
+	}, checkSecondInterval * 1000);
 
 	console.log('Bot running.');
 })();
