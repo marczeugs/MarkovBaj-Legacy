@@ -4,6 +4,7 @@
     "description": "",
     "scripts": {
         "start": "npx ts-node bot.ts",
+        "debug": "node --inspect -r ts-node/register bot.ts",
         "getComments": "npx ts-node getComments.ts",
         "getCommentsPushShift": "npx ts-node getCommentsPushShift.ts"
     },

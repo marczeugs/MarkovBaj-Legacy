@@ -18,12 +18,10 @@ export class MarkovChain {
 
 		for (let i = 0; i < data.length; i++) {
 			const sequence = data[i]!;
-			const sequenceParts = [...sequence, null];
 
-			let firstWord: string, followingWord: string;
-
-			for (let i = 0; i < sequenceParts.length - 1; i++) {
-				[firstWord, followingWord] = sequenceParts.slice(i, i + 2) as [string, string];
+			for (let i = 0; i < sequence.length; i++) {
+				const firstWord = sequence[i]!;
+				const followingWord = sequence[i] ?? null;
 				
 				if (!this.followingWords.has(firstWord)) {
 					this.followingWords.set(firstWord, new WeightedSet());
