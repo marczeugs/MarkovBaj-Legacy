@@ -9,7 +9,7 @@ export class MarkovChain {
 			sequence.filter(word => 
 				!this.excludeTerms.some(term => word.toLowerCase().includes(term.toLowerCase()))
 			)
-		)
+		);
 
 		this.chainStarts.addData(filteredData.map(sequence => sequence[0]!));
 
@@ -61,6 +61,8 @@ class WeightedSet<T> {
 				this.weightMap.set(value, 1);
 			}
 		}
+
+		this.weightSum += data.length;
 	}
 
 	public getRandomValue(): T {
