@@ -21,7 +21,7 @@ export class MarkovChain {
 
 			for (let i = 0; i < sequence.length; i++) {
 				const firstWord = sequence[i]!;
-				const followingWord = sequence[i] ?? null;
+				const followingWord = sequence[i + 1] ?? null;
 				
 				if (!this.followingWords.has(firstWord)) {
 					this.followingWords.set(firstWord, new WeightedSet());
