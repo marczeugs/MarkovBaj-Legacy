@@ -51,19 +51,20 @@ export class MarkovChain {
 
 class WeightedSet<T> {
 	public weightMap = new Map<T, number>();
+	private weightSum: number = 0;
 
-	public addData(data: T[]) {
-		for (const value of data) {
-			if (this.weightMap.has(value)) {
-				this.weightMap.set(value, this.weightMap.get(value)! + 1);
-			} else {
-				this.weightMap.set(value, 1);
-			}
+	public addValue(value: T) {
+		if (this.weightMap.has(value)) {
+			this.weightMap.set(value, this.weightMap.get(value)! + 1);
+		} else {
+			this.weightMap.set(value, 1);
 		}
+
+		this.weightSum++;
 	}
 
 	public getRandomValue(): T {
-		let weightValue = Math.floor(Math.random() * this.weightMap.size);
+		let weightValue = Math.floor(Math.random() * this.weightSum);
 		let currentItem: T, weight: number;
 
 		for ([currentItem, weight] of this.weightMap.entries()) {
