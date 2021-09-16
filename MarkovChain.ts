@@ -5,29 +5,27 @@ export class MarkovChain {
 	constructor(private excludeTerms: string[] = []) { }
 
 	public addData(data: string[][]) {
-		inPlaceMap(
-			data, 
-			sequence => sequence.filter(word => 
+		const filteredData = data.map(sequence => 
+			sequence.filter(word => 
 				!this.excludeTerms.some(term => word.toLowerCase().includes(term.toLowerCase()))
 			)
-		);
+		)
 
-		for (let i = 0; i < data.length; i++) {
-			this.chainStarts.addValue(data[i]![0]!);
-		}
+		this.chainStarts.addData(filteredData.map(sequence => sequence[0]!));
 
-		for (let i = 0; i < data.length; i++) {
-			const sequence = data[i]!;
+		for (const sequence of filteredData) {
+			const sequenceParts = [...sequence, null];
 
-			for (let i = 0; i < sequence.length; i++) {
-				const firstWord = sequence[i]!;
-				const followingWord = sequence[i + 1] ?? null;
+			let firstWord: string, followingWord: string;
+
+			for (let i = 0; i < sequenceParts.length - 1; i++) {
+				[firstWord, followingWord] = sequenceParts.slice(i, i + 2) as [string, string];
 				
 				if (!this.followingWords.has(firstWord)) {
 					this.followingWords.set(firstWord, new WeightedSet());
 				}
 
-				this.followingWords.get(firstWord)!.addValue(followingWord);
+				this.followingWords.get(firstWord)!.addData([followingWord]);
 			}
 		}
 	}
@@ -53,20 +51,19 @@ export class MarkovChain {
 
 class WeightedSet<T> {
 	public weightMap = new Map<T, number>();
-	private weightSum: number = 0;
 
-	public addValue(value: T) {
-		if (this.weightMap.has(value)) {
-			this.weightMap.set(value, this.weightMap.get(value)! + 1);
-		} else {
-			this.weightMap.set(value, 1);
+	public addData(data: T[]) {
+		for (const value of data) {
+			if (this.weightMap.has(value)) {
+				this.weightMap.set(value, this.weightMap.get(value)! + 1);
+			} else {
+				this.weightMap.set(value, 1);
+			}
 		}
-
-		this.weightSum++;
 	}
 
 	public getRandomValue(): T {
-		let weightValue = Math.floor(Math.random() * this.weightSum);
+		let weightValue = Math.floor(Math.random() * this.weightMap.size);
 		let currentItem: T, weight: number;
 
 		for ([currentItem, weight] of this.weightMap.entries()) {
@@ -78,11 +75,5 @@ class WeightedSet<T> {
 		}
 
 		throw '';
-	}
-}
-
-function inPlaceMap<T>(array: T[], operation: (element: T) => T) {
-	for (let i = 0; i < array.length; i++) {
-		array[i] = operation(array[i]!);
 	}
 }
