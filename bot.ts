@@ -7,6 +7,7 @@ const postReplyProbability = 0.3;
 const commentReplyProbability = 0.05;
 const maxCommentsPerInterval = 5;
 const delayBetweenCommentsSeconds = 15;
+const sendCommentsRandomly = process.env['sendCommentsRandomly'] === 'true';
 
 (async () => {
 	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
@@ -42,7 +43,7 @@ const delayBetweenCommentsSeconds = 15;
 				continue;
 			}
 
-			if (Math.random() < postReplyProbability || post.title.toLowerCase().includes('markov')) {
+			if ((sendCommentsRandomly && Math.random() < postReplyProbability) || post.title.toLowerCase().includes('markov')) {
 				const shuffledTitle = shuffleArray(
 					post.title.split(/\s+/).filter(word => !chainIgnoreTerms.some(term => word.toLowerCase().includes(term.toLowerCase())))
 				);
@@ -88,7 +89,7 @@ const delayBetweenCommentsSeconds = 15;
 				continue;
 			}
 
-			if (Math.random() < commentReplyProbability || comment.body.toLowerCase().includes('markov')) {
+			if ((sendCommentsRandomly && Math.random() < commentReplyProbability) || comment.body.toLowerCase().includes('markov')) {
 				const shuffledBody = shuffleArray(
 					comment.body.split(/\s+/).filter(word => !chainIgnoreTerms.some(term => word.toLowerCase().includes(term.toLowerCase())))
 				);
