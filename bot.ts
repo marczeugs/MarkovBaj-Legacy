@@ -10,7 +10,7 @@ const delayBetweenCommentsSeconds = 15;
 const sendCommentsRandomly = process.env['sendCommentsRandomly'] === 'true';
 
 (async () => {
-	const comments: string[] = JSON.parse(fs.readFileSync('data.txt', 'utf8'));
+	const comments: string[] = JSON.parse(fs.readFileSync('data.json', 'utf8'));
 	const chainIgnoreTerms = ['markov'];
 
 	const startTime = Date.now();
