@@ -14,23 +14,24 @@ type ResponseFormat = {
 
 	const urlTemplate = 'https://api.pushshift.io/reddit/search/comment/?subreddit=forsen&size=500&before=';
 
-	let lastTimestamp = Math.floor(Date.now() / 1000);
+	let lastTimestamp = Math.floor((new Date(2021, 9, 11)).getTime() / 1000); // Before emotes and gifs were introduced
 	let allComments: string[] = [];
 
 	while (true) {
 		try {
-			const nextComments = (await fetch(urlTemplate + lastTimestamp).then((response: any) => response.json()) as ResponseFormat).data
-				.filter(comment => !['markovbaj', '[deleted]'].includes(comment.author.toLowerCase()));
+			const nextComments = (await fetch(urlTemplate + lastTimestamp).then((response: any) => response.json()) as ResponseFormat).data;
+			const filteredComments = nextComments.filter(comment => !blacklistedUsernames.includes(comment.author)
+				&& !['markovbaj', '[deleted]'].includes(comment.author.toLowerCase())
+				&& !['mr fors', 'markov'].some(string => comment.body.toLowerCase().includes(string))
+			);
 			
 			allComments = [
 				...allComments, 
-				...nextComments
-					.filter(comment => !blacklistedUsernames.includes(comment.author))
-					.map(comment => comment.body.replace(/\[(.*)\]\(.*\)/g, (_, text) => text).replace(/["()*]/g, '').trim())
+				...filteredComments.map(comment => comment.body.replace(/\[(.*)\]\(.*\)/g, (_, text) => text).replace(/["()*]/g, '').trim())
 			];
 			
-			console.log(`Fetched ${nextComments.length} comments before ${new Date(lastTimestamp * 1000)}, total comments: ${allComments.length}`);
-			fs.writeFileSync('data.txt', JSON.stringify(allComments));
+			console.log(`Fetched ${filteredComments.length} comments before ${new Date(lastTimestamp * 1000)}, total comments: ${allComments.length}`);
+			fs.writeFileSync('data.json', JSON.stringify(allComments));
 
 			lastTimestamp = nextComments.pop()!.created_utc;
 		} catch (_) {
