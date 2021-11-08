@@ -3,6 +3,7 @@ import { MarkovChain } from './MarkovChain';
 import Snoowrap from 'snoowrap';
 
 const checkSecondInterval = 2 * 60;
+const checkSecondTolerance = 15;
 const postReplyProbability = 0.3;
 const commentReplyProbability = 0.05;
 const maxCommentsPerInterval = 5;
@@ -29,12 +30,18 @@ const sendCommentsRandomly = process.env['sendCommentsRandomly'] === 'true';
 		password: process.env['password'],
 	});
 
+	let lastPostIds: string[] = [];
+	let lastCommentIds: string[] = [];
+
 	const forsenSubreddit: Snoowrap.Subreddit = await (bot.getSubreddit('forsen') as any);
 
 	global.setInterval(async () => {
-		const newPosts = (await forsenSubreddit.getNew({ limit: 10 })).filter(post => (Date.now() / 1000) - post.created_utc < checkSecondInterval);
-		const newComments = (await bot.getNewComments('forsen', { limit: 100 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkSecondInterval);
+		const newPosts = (await forsenSubreddit.getNew({ limit: 10 })).filter(post => (Date.now() / 1000) - post.created_utc < checkSecondInterval + checkSecondTolerance && !lastPostIds.includes(post.id));
+		const newComments = (await bot.getNewComments('forsen', { limit: 100 })).filter(comment => (Date.now() / 1000) - comment.created_utc < checkSecondInterval + checkSecondTolerance && !lastCommentIds.includes(comment.id));
 		console.log(`${newPosts.length} new post(s), ${newComments.length} new comment(s).`);
+
+		lastPostIds = newPosts.map(post => post.id);
+		lastCommentIds = newComments.map(comment => comment.id);
 
 		let commentCounter = 0;
 
